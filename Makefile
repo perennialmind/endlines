@@ -2,11 +2,20 @@
 BODIES=$(wildcard src/*.c)
 OBJECTS=$(BODIES:.c=.o)
 
-CFLAGS=-O2 -Wall -std=c99
+# Win32 and MingW in particular require special treatment
+# best handled via build-time feature detection,
+# but that would entail something like autoconf.
+
+# For now, to build for Windows requires overriding
+# CC and CONFIG_H. For example, to build for MingW-W64 on cygwin:
+# make CC=x86_64-w64-mingw32-gcc CONFIG_H=-DHAVE_IO_H
+
+CONFIG_H=-DHAVE_SYS_STAT_H
+
+CFLAGS=-O2 -Wall -std=c99 $(CONFIG_H)
 LDFLAGS=
 
 .PHONY: test install clean
-
 
 endlines: $(OBJECTS)
 	$(CC) $(LDFLAGS) -o $@ $(OBJECTS)

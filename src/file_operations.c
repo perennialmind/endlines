@@ -95,6 +95,7 @@ move_temp_file_to_destination(char *tmp_filename, char *filename, struct stat *s
                 PROGRAM_NAME, filename, tmp_filename, filename);
         exit(EXIT_FAILURE);
     }
+#ifdef HAVE_SYS_STAT_H
     err = chmod(filename, statinfo->st_mode);
     if(err) {
         fprintf(stdout, "%s : could not restore permissions for %s\n", PROGRAM_NAME, filename);
@@ -103,6 +104,7 @@ move_temp_file_to_destination(char *tmp_filename, char *filename, struct stat *s
     if(err) {
         fprintf(stdout, "%s : could not restore ownership for %s\n", PROGRAM_NAME, filename);
     }
+#endif
 
     return CAN_CONTINUE;
 }

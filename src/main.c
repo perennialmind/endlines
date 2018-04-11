@@ -16,7 +16,6 @@
    limitations under the License.
 */
 
-
 #include "command_line_parser.h"
 #include "endlines.h"
 #include "walkers.h"
@@ -26,6 +25,10 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#ifdef HAVE_IO_H
+#include <io.h>
+#include <fcntl.h>
+#endif
 
 
 
@@ -580,6 +583,14 @@ void convert_stdin_to_stdout(Invocation *invocation)
                     convention_display_names[invocation->dst_convention]);
         }
     }
+#ifdef HAVE_IO_H
+    if(-1 == _setmode(_fileno(stdin),  _O_BINARY)) {
+        fprintf(stderr, "%s : failed to set stdin for binary reads\n", PROGRAM_NAME);
+    }
+    if(-1 == _setmode(_fileno(stdout), _O_BINARY)) {
+        fprintf(stderr, "%s : failed to set stdout for binary writes\n", PROGRAM_NAME);
+    }
+#endif
     Conversion_Parameters p = {
         .instream=stdin,
         .outstream= invocation->dst_convention==NO_CONVENTION ? NULL : stdout,
